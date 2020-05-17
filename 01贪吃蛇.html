@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>贪吃蛇</title>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			#box{
+				/*background-color: mediumspringgreen;*/
+				margin: 0px auto;
+				border: 3px solid gold;
+			}
+			h2,h4{
+				background-color: mediumspringgreen;
+				color: darkmagenta;
+				text-align: center;
+			}
+			table{
+				border-spacing: 0;
+				border: 5px solid red;
+				margin: 0 auto;
+			}
+			td{
+				width:20px;
+				height: 20px;
+				border: 1px solid black;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<h2 id="h2">贪吃蛇</h2>
+			<h4 id="h4">0</h4>
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	var hang = 25;//行数
+	var lie = 40;//列数
+	var v = 100;//蛇行速度，一格/v毫秒
+	var divObj = document.getElementById("box");
+	var table = document.createElement("table");
+	var h2 = document.getElementById("h2");
+	var h4 = document.getElementById("h4");
+	var Array = [];//二维数组 存地图
+	var tr;//行
+	var td;//列
+	var s1;//蛇头计时器
+	var s2;//得分变长延迟器
+	var x1 = 0;//头 行
+	var y1 = 0;//头 列
+	var x2;//尾 行
+	var y2;//尾 列
+	var x3 = 0;
+	var y3 = 0;
+	var n = 4;//记录上下左右 1上、2下、3左、4右
+	var bodyx = [];//存蛇身体
+	var bodyy = [];
+	var w = 0;
+	var l = 5;//蛇的初始长度
+	var fen = 0;//得分
+	var p;//存值 判断是否结束
+	var dianji = true;//避免过快操作
+	divObj.appendChild(table);
+	for (var i = 0; i < hang; i++) {
+		tr = document.createElement("tr");
+		table.appendChild(tr);
+	}
+	var trArray = document.getElementsByTagName("tr");
+	for (var i = 0; i < trArray.length; i++) {
+		for (var j = 0; j < lie; j++) {
+			td = document.createElement("td");
+			trArray[i].appendChild(td);
+		}
+		Array[i] = trArray[i].getElementsByTagName("td");
+	}
+	document.onkeydown = function (){
+		if (dianji) {
+			switch (event.keyCode){//上87、 下83、 左65、 右68
+				case 87:{//上
+					if (n != 2) {
+					n = 1;
+					dianji = false;
+					}
+				}
+					break;
+				case 83:{//下
+					if (n != 1) {
+						n = 2;
+						dianji = false;
+					}
+				}
+					break;
+				case 65:{//左
+					if (n != 4) {
+					n = 3;
+					dianji = false;
+					}
+				}
+					break;
+				case 68:{//右
+					if (n != 3) {
+					n = 4;
+					dianji = false;
+					}
+				}
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	function shiwu(){
+	while (Array[x3][y3].style.backgroundColor == "blue"){
+		x3 = Math.floor(Math.random() * trArray.length);
+		y3 = Math.floor(Math.random() * Array[0].length);
+	}
+	Array[x3][y3].style.backgroundColor = "green";
+	}
+	var s3 = setInterval(shiwu,v);
+	function tou(){
+		p = 0;
+		if (x1 < 0 || x1 > trArray.length-1 || y1 < 0 || y1 > Array[0].length-1 || Array[x1][y1].style.backgroundColor == "blue") {
+			clearInterval(s1);
+			clearInterval(s2);
+			p = 1;
+			alert("游戏结束！！！");
+		}
+		if (p == 0) {
+			Array[x1][y1].style.backgroundColor = "blue";
+			dianji = true;
+			bodyx.push(x1);
+			bodyy.push(y1);
+			if (n == 4) {//右
+				y1++;
+			}
+			if (n == 3) {//左
+				y1--;
+			}
+			if (n == 2) {//下
+				x1++;
+			}
+			if (n == 1) {//上
+				x1--;
+			}
+			if (x1 < hang && y1 < lie) {
+				if (Array[x1][y1].style.backgroundColor != "green") {
+					w++;
+					if (w >= l) {
+						s2 = setTimeout(wei,v);
+					}
+				} else{
+					fen ++;
+					s2 = setTimeout(defen,v);
+				}
+			}
+			function defen(){
+				h4.innerHTML = fen;
+			}
+			function wei(){
+				x2 = bodyx[0];
+				y2 = bodyy[0];
+				Array[x2][y2].style.backgroundColor = "white";
+				bodyx.shift();
+				bodyy.shift();
+			}
+		}
+	}
+	s1 = setInterval(tou,v);
+</script>
